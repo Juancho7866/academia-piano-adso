@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Academia de Piano - Cursos</title>
+    <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700&display=swap" rel="stylesheet">
+</head>
+
+<body>
+    <header>
+        <h1>Academia de Piano "Install your piano with love"</h1>
+        <p>Aprende de los mejores maestros</p>
+        <img src="IMG_6583.PNG" alt="imagen de clases online piano">
+        <h2>Ten la oportunidad de mejorar y manejar un horario flexible</h2>
+        <img src="IMG_6582.PNG" alt="imagen de docente"> 
+    </header>
+
+    <main>
+        <section id="subir-leccion" class="form-container">
+            <h3>Subir Nueva Lección de Piano</h3>
+            <form id="formVideo" enctype="multipart/form-data">
+                <input type="text" id="tituloVideo" placeholder="Nombre de la lección (ej: Escala de Do)" required>
+                <input type="number" id="idCurso" placeholder="ID del Curso (Mira el ID en la lista de abajo)" required>
+                <input type="file" id="archivoVideo" name="videoPiano" accept="video/*" required>
+                <button type="submit">Subir Video</button>
+            </form>
+        </section>
+
+        <h3>Nuestros cursos disponibles</h3>
+        <div id="contenedor-cursos" class="grid-cursos">
+            </div>
+    </main>
+    
+    <script>
+        // 1. FUNCIÓN PARA SUBIR VIDEOS
+        document.getElementById('formVideo').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const formData = new FormData();
+            
+            // Importante: Usamos 'cursos_id' para que coincida con tu base de datos
+            formData.append('titulo_video', document.getElementById('tituloVideo').value);
+            formData.append('cursos_id', document.getElementById('idCurso').value);
+            formData.append('videoPiano', document.getElementById('archivoVideo').files[0]);
+
+            try {
+                const res = await fetch('/subir-video', {
+                    method: 'POST',
+                    body: formData
+                });
+
+                if (res.ok) {
+                    alert("✅ ¡Video de piano subido con éxito!");
+                    location.reload(); // Recarga la página para ver el video nuevo
+                } else {
+                    const errorMsg = await res.text();
+                    alert("❌ Error al subir el video: " + errorMsg);
+                }
+            } catch (error) {
+                console.error("Error en la petición:", error);
+                alert("❌ Error de conexión con el servidor.");
+            }
+        });
+
+        // 2. FUNCIÓN PARA CARGAR CURSOS
+        async function cargarCursos() {
+            try {
+                const respuesta = await fetch('/cursos');
+                const cursos = await respuesta.json();
+                const contenedor = document.getElementById('contenedor-cursos');
+                contenedor.innerHTML = ''; 
+
+                cursos.forEach(curso => {
+                    contenedor.innerHTML += `
+                    <div class="card">
+                        <span class="nivel">${curso.nivel}</span>
+                        <h4>(ID: ${curso.id}) ${curso.titulo}</h4>
+                        <p>${curso.descripcion}</p>
+                        <hr style="border: 0.1px solid rgba(255,255,255,0.1); margin: 15px 0;">
+                        <h5>🎥 Lecciones disponibles:</h5>
+                        <div id="lecciones-curso-${curso.id}" class="lista-lecciones">
+                            <p style="font-size: 0.8rem; opacity: 0.6;">Cargando lecciones...</p>
+                        </div>
+                    </div>
+                    `;
+                    // Cargamos los videos específicos de este curso
+                    cargarLecciones(curso.id);
+                });
+            } catch (error) {
+                console.error("Error al cargar cursos:", error);
+                document.getElementById('contenedor-cursos').innerHTML = "<p>Error al cargar los cursos disponibles.</p>";
+            }
+        }
+
+        // 3. FUNCIÓN PARA CARGAR LECCIONES (VIDEOS)
+        async function cargarLecciones(cursoId) {
+            try {
+                const res = await fetch(`/lecciones/${cursoId}`);
+                if (!res.ok) throw new Error("Fallo al obtener lecciones");
+                
+                const lecciones = await res.json();
+                const divLecciones = document.getElementById(`lecciones-curso-${cursoId}`);
+                
+                if (lecciones.length === 0) {
+                    divLecciones.innerHTML = '<p style="font-size: 0.8rem; opacity: 0.5;">No hay videos aún.</p>';
+                    return;
+                }
+
+                divLecciones.innerHTML = ''; // Limpiar el texto de carga
+                lecciones.forEach(video => {
+                    divLecciones.innerHTML += `
+                        <div class="video-item" style="margin-top: 10px;">
+                            <p style="font-size: 0.9rem; margin-bottom: 5px;">🎹 ${video.titulo}</p>
+                            <video width="100%" controls style="border-radius: 8px; border: 1px solid #444;">
+                                <source src="${video.video_url}" type="video/mp4">
+                                Tu navegador no soporta videos.
+                            </video>
+                        </div>
+                    `;
+                });
+            } catch (error) {
+                console.error("Error lecciones ID " + cursoId + ":", error);
+                document.getElementById(`lecciones-curso-${cursoId}`).innerHTML = "Error al cargar videos.";
+            }
+        }
+
+        // Ejecutar al iniciar
+        cargarCursos();
+    </script>
+</body>
+</html>

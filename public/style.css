@@ -1,0 +1,125 @@
+/* Paleta Nocturna: Azul medianoche, Negro y Cyan */
+:root {
+    --bg-color: #0b0e14;
+    --card-bg: #161b22;
+    --accent: #00d2ff; /* Cyan brillante */
+    --text: #e6edf3;
+    --glass: rgba(255, 255, 255, 0.05);
+}
+
+body {
+    font-family: 'Inter', sans-serif;
+    background-color: var(--bg-color);
+    color: var(--text);
+    margin: 0;
+}
+
+/* Header Estilo Hero */
+header {
+    background: linear-gradient(180deg, #161b22 0%, #0b0e14 100%);
+    padding: 50px 20px;
+    text-align: center;
+    border-bottom: 1px solid var(--glass);
+}
+
+header h1 {
+    font-size: 3rem;
+    background: linear-gradient(to right, #fff, var(--accent));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    margin-bottom: 10px;
+}
+
+header img {
+    border: 2px solid var(--accent);
+    padding: 5px;
+    transition: transform 0.5s;
+}
+
+header img:hover {
+    transform: rotate(3deg) scale(1.05);
+}
+
+/* Formulario Estilo Flotante */
+.form-container {
+    background: var(--card-bg);
+    border: 1px solid var(--glass);
+    max-width: 550px;
+    margin: -50px auto 50px;
+    padding: 40px;
+    border-radius: 20px;
+    backdrop-filter: blur(10px);
+}
+
+input, select, button {
+    background: #0d1117;
+    border: 1px solid var(--glass);
+    color: white;
+    padding: 15px;
+    margin: 10px 0;
+    border-radius: 12px;
+    font-size: 1rem;
+}
+
+input:focus {
+    outline: none;
+    border-color: var(--accent);
+    box-shadow: 0 0 10px rgba(0, 210, 255, 0.2);
+}
+
+button {
+    background: linear-gradient(45deg, var(--accent), #3a7bd5);
+    color: white;
+    font-weight: bold;
+    border: none;
+    cursor: pointer;
+    margin-top: 20px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+button:hover {
+    filter: brightness(1.2);
+    box-shadow: 0 0 20px rgba(0, 210, 255, 0.4);
+}
+
+/* Tarjetas de Cursos Estilo Neon */
+.grid-cursos {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 30px;
+    padding: 40px;
+}
+
+.card {
+    background: var(--card-bg);
+    border: 1px solid var(--glass);
+    border-radius: 20px;
+    padding: 30px;
+    position: relative;
+    overflow: hidden;
+    transition: 0.3s;
+}
+
+.card::before {
+    content: "";
+    position: absolute;
+    top: 0; left: 0;
+    width: 4px; height: 100%;
+    background: var(--accent);
+}
+
+.card:hover {
+    border-color: var(--accent);
+    transform: translateY(-5px);
+    background: #1c2128;
+}
+
+.nivel {
+    background: rgba(0, 210, 255, 0.1);
+    color: var(--accent);
+    padding: 5px 15px;
+    border-radius: 50px;
+    font-size: 0.8rem;
+    border: 1px solid var(--accent);
+}
